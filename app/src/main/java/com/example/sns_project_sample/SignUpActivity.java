@@ -1,5 +1,6 @@
 package com.example.sns_project_sample;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -28,7 +29,7 @@ public class SignUpActivity extends AppCompatActivity {
         mAuth = FirebaseAuth.getInstance();
 
         findViewById(R.id.SignUpButton).setOnClickListener(onClickListener);
-
+        findViewById(R.id.gotoLoginButton).setOnClickListener(onClickListener);
     }
 
     @Override
@@ -46,6 +47,9 @@ public class SignUpActivity extends AppCompatActivity {
                 case R.id.SignUpButton:
                     Log.e("클릭","클릭");
                     signUp();
+                    break;
+                case R.id.gotoLoginButton:
+                    startLoginActivity();
                     break;
             }
         }
@@ -85,6 +89,10 @@ public class SignUpActivity extends AppCompatActivity {
 
     private void startToast(String msg){
         Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
+    }
 
+    private void startLoginActivity(){
+        Intent intent=new Intent(this,LoginActivity.class);
+        startActivity(intent);
     }
 }
