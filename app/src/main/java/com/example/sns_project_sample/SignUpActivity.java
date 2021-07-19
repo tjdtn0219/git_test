@@ -33,11 +33,11 @@ public class SignUpActivity extends AppCompatActivity {
     }
 
     @Override
-    public void onStart() {
-        super.onStart();
-        // Check if user is signed in (non-null) and update UI accordingly.
-        FirebaseUser currentUser = mAuth.getCurrentUser();
-
+    public void onBackPressed() {//뒤로가기 누르면 바로꺼지게 함
+        super.onBackPressed();
+        moveTaskToBack(true);
+        android.os.Process.killProcess(android.os.Process.myPid());
+        System.exit(1);
     }
 
     View.OnClickListener onClickListener=new View.OnClickListener() {
@@ -62,7 +62,7 @@ public class SignUpActivity extends AppCompatActivity {
 
         if(email.length() > 0 && password.length() > 0 && passwordCheck.length() > 0) {
             if(password.equals(passwordCheck)){
-                mAuth.createUserWithEmailAndPassword(email, password)
+                mAuth.createUserWithEmailAndPassword(email, password)//회원가입 로직
                         .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                             @Override
                             public void onComplete(@NonNull Task<AuthResult> task) {

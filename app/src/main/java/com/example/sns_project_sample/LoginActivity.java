@@ -1,5 +1,6 @@
 package com.example.sns_project_sample;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -56,13 +57,14 @@ public class LoginActivity extends AppCompatActivity {
         String password = ((EditText)findViewById(R.id.passwordEditText)).getText().toString();
 
         if(email.length() > 0 && password.length() > 0) {
-            mAuth.createUserWithEmailAndPassword(email, password)
+            mAuth.signInWithEmailAndPassword(email, password)
                     .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                         @Override
                         public void onComplete(@NonNull Task<AuthResult> task) {
                             if (task.isSuccessful()) {
                                 FirebaseUser user = mAuth.getCurrentUser();
-                                startToast("회원가입에 성공하였습니다.");
+                                startToast("로그인에 성공하였습니다.");
+                                startMainActivity();
                             } else {
                                 if(task.getException() != null){
                                     startToast(task.getException().toString());
@@ -78,6 +80,12 @@ public class LoginActivity extends AppCompatActivity {
 
     private void startToast(String msg){
         Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
+    }
 
+    private void startMainActivity(){
+        Intent intent=new Intent(this,MainActivity.class);
+        intent.addFlags(intent.FLAG_ACTIVITY_CLEAR_TOP);
+        //Login화면에서 Main화면으로 갈때 스택에는 Main->회원가입->Login와 같이 있는데 회원가입,Login 기록에서 제거
+        startActivity(intent);
     }
 }
