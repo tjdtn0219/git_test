@@ -18,7 +18,6 @@ import com.google.firebase.auth.FirebaseUser;
 
 public class SignUpActivity extends AppCompatActivity {
     private FirebaseAuth mAuth;
-    private static final String TAG = "SignUpActivity";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,7 +48,7 @@ public class SignUpActivity extends AppCompatActivity {
                     signUp();
                     break;
                 case R.id.gotoLoginButton:
-                    startLoginActivity();
+                    myStartActivity(LoginActivity.class);
                     break;
             }
         }
@@ -69,6 +68,7 @@ public class SignUpActivity extends AppCompatActivity {
                                 if (task.isSuccessful()) {
                                     FirebaseUser user = mAuth.getCurrentUser();
                                     startToast("회원가입에 성공하였습니다.");
+                                    myStartActivity(MainActivity.class);
                                 } else {
                                     if(task.getException() != null){
                                         startToast(task.getException().toString());
@@ -91,8 +91,11 @@ public class SignUpActivity extends AppCompatActivity {
         Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
     }
 
-    private void startLoginActivity(){
-        Intent intent=new Intent(this,LoginActivity.class);
+    private void myStartActivity(Class c){
+        Intent intent=new Intent(this, c);
+        intent.addFlags(intent.FLAG_ACTIVITY_CLEAR_TOP);
+        //Login화면에서 Main화면으로 갈때 스택에는 Main->회원가입->Login와 같이 있는데 회원가입,Login 기록에서 제거
         startActivity(intent);
     }
+
 }
