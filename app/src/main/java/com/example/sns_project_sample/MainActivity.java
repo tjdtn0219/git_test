@@ -1,5 +1,6 @@
 package com.example.sns_project_sample;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
@@ -7,11 +8,16 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.auth.UserInfo;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 public class MainActivity extends AppCompatActivity {
+    private static final String TAG = "MainActivity";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -24,17 +30,30 @@ public class MainActivity extends AppCompatActivity {
             myStartActivity(SignUpActivity.class);
         }
         else{//회원가입 & 로그인이 되어있는 상태
-            for (UserInfo profile : user.getProviderData()) {
-                String name = profile.getDisplayName();
-                Log.e("이름", "이름 : "+name);
-                if(name != null){
-                    if(name.length() == 0){//name 은 null처리가 안됨
-                        myStartActivity(MemberActivity.class);
+            myStartActivity(CameraActivity.class);
+
+            FirebaseFirestore db = FirebaseFirestore.getInstance();
+            DocumentReference docRef = db.collection("users").document(user.getUid());//~
+            docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                @Override
+                public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                    if (task.isSuccessful()) {
+                        DocumentSnapshot document = task.getResult();
+                        if (document != null) {
+                            if (document.exists()) {
+                                Log.d(TAG, "DocumentSnapshot data: " + document.getData());
+                            } else {
+                                Log.d(TAG, "No such document");
+                                myStartActivity(MemberActivity.class);
+                            }
+                        }
+                    } else {
+                        Log.d(TAG, "get failed with ", task.getException());
                     }
                 }
-            }
-        }
+            });//~데이터 읽기-> 데이터 한번 가져오기 -> 문서 가져오기
 
+        }
         findViewById(R.id.LogoutButton).setOnClickListener(onClickListener);
     }
 
@@ -52,8 +71,6 @@ public class MainActivity extends AppCompatActivity {
 
     private void myStartActivity(Class c){
         Intent intent=new Intent(this, c);
-        intent.addFlags(intent.FLAG_ACTIVITY_CLEAR_TOP);
-        //Login화면에서 Main화면으로 갈때 스택에는 Main->회원가입->Login와 같이 있는데 회원가입,Login 기록에서 제거
         startActivity(intent);
     }
 
